@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 
 from separate_pipeline import run_separate, run_separate_with_sentence_filter
-from separate_crf import run_separate_crf
 from dataloader_utils import get_doc_ids, get_all
 
 
@@ -94,26 +93,5 @@ if __name__ == '__main__':
         extra_meta={
             "use_pre_trained": use_pre_trained,
             "use_gold_sent": False
-        }
-    )
-
-    # =========================
-    # 3. CRF
-    # =========================
-    print("\n===== baseline with CRF =====")
-    test_labels_crf, pred_labels_crf = run_separate_crf(
-        label_type=label_type,
-        use_pre_trained=use_pre_trained
-    )
-
-    save_results_json(
-        pipeline_name="crf",
-        label_type=label_type,
-        doc_ids=test_doc_ids,
-        tokens=test_tokens,
-        gold_labels=test_labels_crf,
-        pred_labels=pred_labels_crf,
-        extra_meta={
-            "use_pre_trained": use_pre_trained
         }
     )
