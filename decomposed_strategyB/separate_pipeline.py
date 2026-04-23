@@ -63,7 +63,7 @@ def run_separate(label_type='participants', use_pre_trained=1):
 
     print("Step 7 已完成：模型初始化完成")
     print("Step 8: 开始训练模型...")
-    model = train_model(model, train_loader, epochs=3)
+    model = train_model(model, train_loader, epochs=5)
 
     print("Step 8 已完成：模型训练完成")
     print("Step 9: 开始预测...")
@@ -122,7 +122,7 @@ def run_separate_with_sentence_filter(label_type='participants', use_gold_sent=F
     )
 
     print("Step 6: 训练 token 模型...")
-    model = train_model(model, train_loader, epochs=3)
+    model = train_model(model, train_loader, epochs=5)
 
     print("Step 7: 在过滤后的 test 上预测...")
     pred_ids = predict(model, test_loader)
