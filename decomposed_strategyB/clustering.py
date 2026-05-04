@@ -1,11 +1,7 @@
 """
-clustering.py (v2 - all 3 PICO fields)
+clustering.py (all 3 PICO fields)
 ---------------------------------------
 Preliminary clustering analysis for Task 2: Structured Information Extraction.
-
-Coursework requirement:
-"Before extraction, use k-means or HAC on sentence embeddings to see whether
-natural clusters correspond to schema fields."
 
 This script:
 1. Loads sentences from ALL THREE fields (Participants, Interventions, Outcomes)
@@ -42,9 +38,7 @@ FIELD_COLORS = {
 CLUSTER_COLORS = ['#e15759', '#76b7b2', '#edc948']  # red, teal, yellow
 MAX_DOCS = 1000   # use first 1000 docs for speed
 
-
-# ============================================================
-# Step 1: Find common doc_ids across all 3 fields
+# Step 1: Finding common doc_ids across all 3 fields
 # ============================================================
 print("Step 1: Finding common doc_ids across all 3 PICO fields...")
 
@@ -62,14 +56,12 @@ common_ids = sorted(
 doc_ids = common_ids[:MAX_DOCS]
 print(f"  Total common docs: {len(common_ids)}, using first {len(doc_ids)}")
 
-
-# ============================================================
 # Step 2: Load sentences from all 3 fields
 # ============================================================
 print("\nStep 2: Loading PICO-containing sentences from all 3 fields...")
 
 all_sentences = []
-all_field_labels = []  # 0=participants, 1=interventions, 2=outcomes
+all_field_labels = []  # 0=participants, 1=interventions, 2=outcome
 
 for field_idx, field in enumerate(FIELDS):
     print(f"  Loading {field}...")
@@ -83,7 +75,6 @@ for field_idx, field in enumerate(FIELDS):
 
         sentences = split_into_sentences(doc_tokens, doc_labels)
         for sent_tokens, sent_labels in sentences:
-            # Only use sentences that actually contain a span for this field
             has_span = any(l in ['B', 'I'] for l in sent_labels)
             if has_span:
                 all_sentences.append(" ".join(sent_tokens))
@@ -98,8 +89,6 @@ for i, field in enumerate(FIELDS):
     n = sum(all_field_labels == i)
     print(f"  {field}: {n}")
 
-
-# ============================================================
 # Step 3: TF-IDF vectorisation
 # ============================================================
 print("\nStep 3: Vectorising with TF-IDF...")
@@ -113,8 +102,7 @@ X = vectorizer.fit_transform(all_sentences)
 print(f"  Feature matrix: {X.shape[0]} sentences x {X.shape[1]} features")
 
 
-# ============================================================
-# Step 4: PCA for 2D visualisation
+# Step 4: PCA for visualisation
 # ============================================================
 print("\nStep 4: PCA reduction to 2D...")
 pca = PCA(n_components=2, random_state=42)
@@ -122,8 +110,6 @@ X_2d = pca.fit_transform(X.toarray())
 var = pca.explained_variance_ratio_
 print(f"  Variance explained: PC1={var[0]:.1%}, PC2={var[1]:.1%}, Total={var.sum():.1%}")
 
-
-# ============================================================
 # Step 5: K-means (k=3)
 # ============================================================
 print("\nStep 5: Running K-means (k=3)...")
@@ -146,11 +132,9 @@ for i, field in enumerate(FIELDS):
     print(f"  {field:20s} {pcts[0]:>10} {pcts[1]:>10} {pcts[2]:>10}")
 
 
-# ============================================================
-# Step 6: HAC (k=3, Ward linkage) on subsample
+# Step 6: HAC
 # ============================================================
 print("\nStep 6: Running HAC (k=3, Ward linkage)...")
-# HAC is memory-intensive — subsample for speed
 n_sub = min(3000, len(all_sentences))
 rng = np.random.default_rng(42)
 idx = rng.choice(len(all_sentences), n_sub, replace=False)
@@ -166,8 +150,6 @@ print(f"  Cluster sizes (subsample n={n_sub}): {[int(sum(hac_labels==i)) for i i
 print(f"  Adjusted Rand Index: {ari_hac:.4f}")
 print(f"  Homogeneity:         {hom_hac:.4f}")
 
-
-# ============================================================
 # Step 7: Two-panel plot
 # ============================================================
 print("\nStep 7: Generating two-panel plot...")
@@ -222,8 +204,6 @@ plt.savefig('clustering_plot.png', dpi=150, bbox_inches='tight')
 print("  Saved: clustering_plot.png")
 plt.show()
 
-
-# ============================================================
 # Step 8: Summary
 # ============================================================
 print("\n" + "=" * 60)
