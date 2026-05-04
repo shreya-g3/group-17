@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 # =========================================================
-# 1. 读取 JSON
+# 1. Load JSON
 # =========================================================
 def load_result_json(json_path):
     json_path = Path(json_path)
@@ -14,13 +14,13 @@ def load_result_json(json_path):
     required_keys = ["label_type", "doc_ids", "tokens", "gold_labels", "pred_labels"]
     for key in required_keys:
         if key not in data:
-            raise ValueError(f"JSON 缺少必要字段: {key}")
+            raise ValueError(f"JSON missing required field: {key}")
 
     return data
 
 
 # =========================================================
-# 2. 基础配置
+# 2. Base configuration
 # =========================================================
 def get_color(label_type):
     color_map = {
@@ -33,7 +33,7 @@ def get_color(label_type):
 
 
 # =========================================================
-# 3. 渲染单篇文档
+# 3. Render a single document
 # =========================================================
 def render_single_label_doc(tokens, labels, color="#cfe8ff"):
     parts = []
@@ -87,7 +87,7 @@ def render_single_label_doc(tokens, labels, color="#cfe8ff"):
 
 
 # =========================================================
-# 4. span 评估工具（文档级）
+# 4. Span evaluation utilities (document level)
 # =========================================================
 def labels_to_spans(doc_labels):
     spans = []
@@ -172,7 +172,7 @@ def doc_overlap_f1(gold_labels, pred_labels, threshold=0.5):
 
 
 # =========================================================
-# 5. 构造 case
+# 5. Build cases
 # =========================================================
 def build_cases_from_json(json_path):
     data = load_result_json(json_path)
@@ -200,7 +200,7 @@ def build_cases_from_json(json_path):
 
 
 # =========================================================
-# 6. 打分、排序、挑例子
+# 6. Score, rank and select examples
 # =========================================================
 def add_scores_to_cases(cases, overlap_threshold=0.5):
     scored = []
@@ -233,7 +233,7 @@ def rank_cases(cases, overlap_threshold=0.5):
 
 
 # =========================================================
-# 7. HTML 渲染
+# 7. HTML rendering
 # =========================================================
 def render_case_html(case, label_type="participants"):
     color = get_color(label_type)
@@ -293,11 +293,11 @@ def save_ranked_visualization_html(
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(page)
 
-    print(f"HTML 已保存到: {output_path}")
+    print(f"HTML saved to: {output_path}")
 
 
 # =========================================================
-# 8. 一键运行
+# 8. One-click run
 # =========================================================
 def run_visualization_from_json(json_path, output_path=None, overlap_threshold=0.5):
     label_type, pipeline_name, cases = build_cases_from_json(json_path)
